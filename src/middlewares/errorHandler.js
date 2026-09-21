@@ -1,4 +1,3 @@
-//middlewares/errorHandler.js
 import {
   AppError,
   NotFoundError,
@@ -62,6 +61,19 @@ export default function errorHandler(error, req, res, next) {
     return res.status(409).json({
       success: false,
       error: { code: "CONFLICT", message: "Registro duplicado" },
+      timestamp: new Date().toISOString(),
+      path: req.path,
+    });
+  }
+
+  // Trata erro de Restrição de Chave Estrangeira do Prisma (ex: excluir matéria que possui questões)
+  if (error?.code === "P2003") {
+    return res.status(409).json({
+      success: false,
+      error: {
+        code: "CONFLICT",
+        message: "Não é possível excluir o recurso pois existem dependências vinculadas.",
+      },
       timestamp: new Date().toISOString(),
       path: req.path,
     });
