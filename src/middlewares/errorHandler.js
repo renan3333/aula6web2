@@ -12,9 +12,11 @@ import {
  * @returns {void}
  */
 export function notFoundHandler(req, _res, next) {
-  next(
-    new NotFoundError(`Rota ${req.method} ${req.originalUrl} não encontrada`),
+  const error = new NotFoundError(
+    `Rota ${req.method} ${req.originalUrl} não encontrada`,
   );
+  error.hint = "Versões disponíveis: /v1"; // <- Novo
+  next(error);
 }
 
 /**
@@ -29,6 +31,7 @@ export default function errorHandler(error, req, res, next) {
   if (res.headersSent) {
     return next(error);
   }
+  
 
   // Erros conhecidos do express.json() acontecem antes da validação Zod.
   // Não confie em qualquer error.status: traduza somente tipos reconhecidos.
@@ -44,13 +47,14 @@ export default function errorHandler(error, req, res, next) {
     );
   }
 
-  if (error instanceof AppError && error.isOperational) {
+   if (error instanceof AppError && error.isOperational) {
     return res.status(error.statusCode).json({
       success: false,
       error: {
         code: error.code,
         message: error.message,
         ...(error.details.length > 0 && { details: error.details }),
+        ...(error.hint && { hint: error.hint }), // <- Novo
       },
       timestamp: new Date().toISOString(),
       path: req.path,
@@ -62,6 +66,8 @@ export default function errorHandler(error, req, res, next) {
       success: false,
       error: { code: "CONFLICT", message: "Registro duplicado" },
       timestamp: new Date().toISOString(),
+      version: "1.0.0",
+availableVersions: ["v1"],
       path: req.path,
     });
   }
@@ -75,6 +81,8 @@ export default function errorHandler(error, req, res, next) {
         message: "Não é possível excluir o recurso pois existem dependências vinculadas.",
       },
       timestamp: new Date().toISOString(),
+      version: "1.0.0",
+availableVersions: ["v1"],
       path: req.path,
     });
   }
@@ -89,6 +97,8 @@ export default function errorHandler(error, req, res, next) {
     success: false,
     error: { code: "INTERNAL_ERROR", message: "Erro interno do servidor" },
     timestamp: new Date().toISOString(),
+    version: "1.0.0",
+availableVersions: ["v1"],
     path: req.path,
   });
 }
