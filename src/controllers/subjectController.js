@@ -1,26 +1,6 @@
 import * as subjectService from "../services/subjectService.js";
 
 /**
- * Cria uma matéria a partir de dados já validados pelo middleware.
- * @param {import("express").Request} req - Requisição HTTP.
- * @param {import("express").Response} res - Resposta HTTP.
- * @param {import("express").NextFunction} next - Encaminhador de erros.
- * @returns {Promise<void>} Resposta de criação ou encaminhamento de erro.
- */
-export async function create(req, res, next) {
-  try {
-    const data = await subjectService.createSubject(req.body);
-    res.status(201).json({
-      success: true,
-      message: "Matéria criada com sucesso",
-      data,
-    });
-  } catch (error) {
-    next(error);
-  }
-}
-
-/**
  * Lista todas as matérias públicas.
  * @param {import("express").Request} _req - Requisição HTTP não utilizada.
  * @param {import("express").Response} res - Resposta HTTP.
@@ -47,6 +27,26 @@ export async function getById(req, res, next) {
   try {
     const data = await subjectService.getSubjectById(req.params.id);
     res.status(200).json({ success: true, data });
+  } catch (error) {
+    next(error);
+  }
+}
+
+/**
+ * Cria uma matéria com dados já validados pelo middleware.
+ * @param {import("express").Request} req - Requisição HTTP.
+ * @param {import("express").Response} res - Resposta HTTP.
+ * @param {import("express").NextFunction} next - Encaminhador de erros.
+ * @returns {Promise<void>} Resposta de criação ou encaminhamento de erro.
+ */
+export async function create(req, res, next) {
+  try {
+    const data = await subjectService.createSubject(req.body);
+    res.status(201).json({
+      success: true,
+      message: "Matéria criada com sucesso",
+      data,
+    });
   } catch (error) {
     next(error);
   }

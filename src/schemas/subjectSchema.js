@@ -1,39 +1,37 @@
 import { z } from "zod";
+import { positiveIdSchema } from "./idSchema.js";
 
-// Helper para ID numérico positivo (aceita número ou string decimal, rejeita booleanos e arrays)
-const positiveIdSchema = z.preprocess((val) => {
-  if (typeof val === "boolean" || Array.isArray(val) || val === null || val === undefined) {
-    return val;
-  }
-  if (typeof val === "string" && val.trim() !== "") {
-    const num = Number(val);
-    return Number.isInteger(num) ? num : val;
-  }
-  return val;
-}, z.number().int().positive().max(2147483647));
-
-// Validação de parâmetro :id em GET, PATCH e DELETE
+/** Schema reutilizável para IDs de parâmetros de matérias. */
 export const idParamSchema = z.object({
   id: positiveIdSchema,
 });
 
-// POST /subjects
+/** Schema para POST /subjects. */
 export const createSubjectSchema = z
   .object({
-    nome: z.string().trim().min(3).max(100),
+    nome: z
+      .string()
+      .trim()
+      .min(3, "Nome deve ter pelo menos 3 caracteres")
+      .max(100, "Nome deve ter no máximo 100 caracteres"),
     professorId: positiveIdSchema,
     ativa: z.boolean().optional(),
   })
   .strict();
 
-// PATCH /subjects/:id
+/** Schema para PATCH /subjects/:id. */
 export const updateSubjectSchema = z
   .object({
-    nome: z.string().trim().min(3).max(100).optional(),
+    nome: z
+      .string()
+      .trim()
+      .min(3, "Nome deve ter pelo menos 3 caracteres")
+      .max(100, "Nome deve ter no máximo 100 caracteres")
+      .optional(),
     professorId: positiveIdSchema.optional(),
     ativa: z.boolean().optional(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {
-    message: "Pelo menos um campo aceito deve ser fornecido",
+    message: "Envie pelo menos um campo para atualização",
   });

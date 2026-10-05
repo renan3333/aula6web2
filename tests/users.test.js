@@ -18,11 +18,11 @@ function uniqueEmail(label) {
 /**
  * Cria um usuário pela API e registra o ID para a limpeza após o teste.
  * @param {object} [overrides={}] - Campos que substituem os valores padrão da requisição.
- * @returns {Promise<import("supertest").Response>} Resposta de `POST /users`.
+ * @returns {Promise<import("supertest").Response>} Resposta de `POST /v1/users`.
  */
 async function createUser(overrides = {}) {
   const response = await request(app)
-    .post("/users")
+    .post("/v1/users")
     .send({
       nome: "Prof. Teste",
       email: uniqueEmail("user"),
@@ -95,7 +95,7 @@ describe("User API com validação", () => {
         );
         expectApiError(response, 400, "VALIDATION_ERROR");
       }
-      const missing = await client[method](`/users/${id}`).send(
+      const missing = await client[method](`/v1/users/${id}`).send(
         method === "patch" ? { nome: "Novo nome" } : undefined,
       );
       expectApiError(missing, 404, "NOT_FOUND");
@@ -182,7 +182,7 @@ describe("User API com validação", () => {
     const originalEmail = created.body.data.email;
 
     const updated = await request(app)
-      .patch(`/users/${userId}`)
+      .patch(`/v1/users/${userId}`)
       .send({ nome: "  Nome atualizado  " });
     const empty = await request(app).patch(`/v1/users/${userId}`).send({});
 
@@ -197,7 +197,7 @@ describe("User API com validação", () => {
     const second = await createUser();
 
     const response = await request(app)
-      .patch(`/users/${second.body.data.id}`)
+      .patch(`/v1/users/${second.body.data.id}`)
       .send({ email: first.body.data.email.toUpperCase() });
 
     expectApiError(response, 409, "CONFLICT");

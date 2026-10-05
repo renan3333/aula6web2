@@ -1,8 +1,5 @@
 import prisma from "../../../config/database.js";
-import {
-  ConflictError,
-  NotFoundError,
-} from "../../../errors/AppError.js";
+import { ConflictError, NotFoundError } from "../../../errors/AppError.js";
 
 const publicUserSelect = {
   id: true,
@@ -27,7 +24,7 @@ export function getAllUsers() {
 
 /**
  * Busca um usuário por identificador.
- * @param {number} userId ID já validado pelo middleware.
+ * @param {number} userId - ID já validado pelo middleware.
  * @returns {Promise<object>} Usuário público encontrado.
  * @throws {NotFoundError} Quando o usuário não existe.
  */
@@ -46,7 +43,7 @@ export async function getUserById(userId) {
 
 /**
  * Cria um usuário depois de verificar a unicidade do e-mail.
- * @param {{nome: string, email: string, papel?: "PROFESSOR"|"ADMIN", foto?: string|null}} data Dados já parseados pelo Zod.
+ * @param {{nome: string, email: string, papel?: "PROFESSOR"|"ADMIN", foto?: string|null}} data - Dados já parseados pelo Zod.
  * @returns {Promise<object>} Usuário público criado.
  * @throws {ConflictError} Quando o e-mail já pertence a outro usuário.
  */
@@ -81,8 +78,8 @@ export async function createUser(data) {
 
 /**
  * Atualiza somente os campos enviados para um usuário existente.
- * @param {number} userId ID já validado pelo middleware.
- * @param {{nome?: string, email?: string, papel?: "PROFESSOR"|"ADMIN", foto?: string|null}} data Campos permitidos.
+ * @param {number} userId - ID já validado pelo middleware.
+ * @param {{nome?: string, email?: string, papel?: "PROFESSOR"|"ADMIN", foto?: string|null}} data - Campos permitidos.
  * @returns {Promise<object>} Usuário público atualizado.
  * @throws {NotFoundError} Quando o usuário não existe.
  * @throws {ConflictError} Quando outro usuário já possui o e-mail.
@@ -125,7 +122,7 @@ export async function updateUser(userId, data) {
 
 /**
  * Remove um usuário que não possua matérias nem questões vinculadas.
- * @param {number} userId ID já validado pelo middleware.
+ * @param {number} userId - ID já validado pelo middleware.
  * @returns {Promise<object>} Usuário público removido.
  * @throws {NotFoundError} Quando o usuário não existe.
  * @throws {ConflictError} Quando há matérias ou questões vinculadas.

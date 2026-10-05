@@ -1,66 +1,60 @@
 import { z } from "zod";
+import { positiveIdSchema, numericInputSchema } from "./idSchema.js";
 
-// Helper para ID numérico positivo (aceita número ou string decimal, rejeita booleanos e arrays)
-const positiveIdSchema = z.preprocess((val) => {
-  if (typeof val === "boolean" || Array.isArray(val) || val === null || val === undefined) {
-    return val;
-  }
-  if (typeof val === "string" && val.trim() !== "") {
-    const num = Number(val);
-    return Number.isInteger(num) ? num : val;
-  }
-  return val;
-}, z.number().int().positive().max(2147483647));
-
-// Helper para dificuldade de 1 a 3 (aceita número ou texto decimal, rejeita booleanos e arrays)
-const dificuldadeSchema = z.preprocess((val) => {
-  if (typeof val === "boolean" || Array.isArray(val) || val === null || val === undefined) {
-    return val;
-  }
-  if (typeof val === "string" && val.trim() !== "") {
-    const num = Number(val);
-    return Number.isInteger(num) ? num : val;
-  }
-  return val;
-}, z.number().int().min(1).max(3));
-
-// Campo opcional no POST/PATCH: string com trim (1 a 500 caracteres) ou null
-const respostaCorretaSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .max(500)
-  .nullable()
-  .optional();
-
-// Validação de parâmetro :id em GET, PATCH e DELETE
+/** Schema reutilizável para IDs de parâmetros de questões. */
 export const idParamSchema = z.object({
   id: positiveIdSchema,
 });
 
-// POST /questions
+const questionFields = {
+  enunciado: z
+    .string()
+    .trim()
+    .min(3, "Enunciado deve ter pelo menos 3 caracteres")
+    .max(500, "Enunciado deve ter no máximo 500 caracteres"),
+  dificuldade: numericInputSchema.pipe(
+    z.coerce
+      .number()
+      .int("Dificuldade deve ser inteira")
+      .min(1, "Dificuldade deve estar entre 1 e 3")
+      .max(3, "Dificuldade deve estar entre 1 e 3"),
+  ),
+  respostaCorreta: z.union([
+    z
+      .string()
+      .trim()
+      .min(1, "Resposta correta não pode ser vazia")
+      .max(500, "Resposta correta deve ter no máximo 500 caracteres"),
+    z.null(),
+  ]),
+  subjectId: positiveIdSchema,
+  authorId: positiveIdSchema,
+  ativa: z.boolean(),
+};
+
+/** Schema para POST /questions. */
 export const createQuestionSchema = z
   .object({
-    enunciado: z.string().trim().min(3).max(500),
-    dificuldade: dificuldadeSchema,
-    respostaCorreta: respostaCorretaSchema,
-    subjectId: positiveIdSchema,
-    authorId: positiveIdSchema,
-    ativa: z.boolean().optional(),
+    enunciado: questionFields.enunciado,
+    dificuldade: questionFields.dificuldade,
+    respostaCorreta: questionFields.respostaCorreta.optional(),
+    subjectId: questionFields.subjectId,
+    authorId: questionFields.authorId,
+    ativa: questionFields.ativa.optional(),
   })
   .strict();
 
-// PATCH /questions/:id
+/** Schema para PATCH /questions/:id. */
 export const updateQuestionSchema = z
   .object({
-    enunciado: z.string().trim().min(3).max(500).optional(),
-    dificuldade: dificuldadeSchema.optional(),
-    respostaCorreta: respostaCorretaSchema,
-    subjectId: positiveIdSchema.optional(),
-    authorId: positiveIdSchema.optional(),
-    ativa: z.boolean().optional(),
+    enunciado: questionFields.enunciado.optional(),
+    dificuldade: questionFields.dificuldade.optional(),
+    respostaCorreta: questionFields.respostaCorreta.optional(),
+    subjectId: questionFields.subjectId.optional(),
+    authorId: questionFields.authorId.optional(),
+    ativa: questionFields.ativa.optional(),
   })
   .strict()
   .refine((data) => Object.keys(data).length > 0, {
-    message: "PATCH não pode ficar vazio",
+    message: "Envie pelo menos um campo para atualização",
   });

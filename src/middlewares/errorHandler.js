@@ -15,7 +15,7 @@ export function notFoundHandler(req, _res, next) {
   const error = new NotFoundError(
     `Rota ${req.method} ${req.originalUrl} não encontrada`,
   );
-  error.hint = "Versões disponíveis: /v1"; // <- Novo
+  error.hint = "Versões disponíveis: /v1";
   next(error);
 }
 
@@ -31,7 +31,6 @@ export default function errorHandler(error, req, res, next) {
   if (res.headersSent) {
     return next(error);
   }
-  
 
   // Erros conhecidos do express.json() acontecem antes da validação Zod.
   // Não confie em qualquer error.status: traduza somente tipos reconhecidos.
@@ -47,14 +46,14 @@ export default function errorHandler(error, req, res, next) {
     );
   }
 
-   if (error instanceof AppError && error.isOperational) {
+  if (error instanceof AppError && error.isOperational) {
     return res.status(error.statusCode).json({
       success: false,
       error: {
         code: error.code,
         message: error.message,
         ...(error.details.length > 0 && { details: error.details }),
-        ...(error.hint && { hint: error.hint }), // <- Novo
+        ...(error.hint && { hint: error.hint }),
       },
       timestamp: new Date().toISOString(),
       path: req.path,
@@ -66,23 +65,6 @@ export default function errorHandler(error, req, res, next) {
       success: false,
       error: { code: "CONFLICT", message: "Registro duplicado" },
       timestamp: new Date().toISOString(),
-      version: "1.0.0",
-availableVersions: ["v1"],
-      path: req.path,
-    });
-  }
-
-  // Trata erro de Restrição de Chave Estrangeira do Prisma (ex: excluir matéria que possui questões)
-  if (error?.code === "P2003") {
-    return res.status(409).json({
-      success: false,
-      error: {
-        code: "CONFLICT",
-        message: "Não é possível excluir o recurso pois existem dependências vinculadas.",
-      },
-      timestamp: new Date().toISOString(),
-      version: "1.0.0",
-availableVersions: ["v1"],
       path: req.path,
     });
   }
@@ -97,8 +79,6 @@ availableVersions: ["v1"],
     success: false,
     error: { code: "INTERNAL_ERROR", message: "Erro interno do servidor" },
     timestamp: new Date().toISOString(),
-    version: "1.0.0",
-availableVersions: ["v1"],
     path: req.path,
   });
 }

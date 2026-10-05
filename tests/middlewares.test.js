@@ -29,7 +29,7 @@ describe("Infraestrutura e pipeline HTTP", () => {
     expect(response.status).toBe(413);
     expect(response.body.error.code).toBe("PAYLOAD_TOO_LARGE");
     expect(response.body.success).toBe(false);
-    expect(response.body.path).toBe("/users");
+    expect(response.body.path).toBe("/v1/users");
     expect(Number.isNaN(Date.parse(response.body.timestamp))).toBe(false);
   });
 
@@ -54,7 +54,24 @@ describe("Infraestrutura e pipeline HTTP", () => {
     const response = await request(app).get("/health");
     expect(response.status).toBe(200);
     expect(response.body.status).toBe("OK");
+    expect(response.body.version).toBe("1.0.0");
+    expect(response.body.availableVersions).toContain("v1");
     expect(response.body.services.database.status).toBe("OK");
+  });
+
+  it("expõe o health da V1", async () => {
+    const response = await request(app).get("/v1/health");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toMatchObject({ version: "v1", status: "OK" });
+  });
+
+  it("rejeita a rota de usuário sem versão", async () => {
+    const response = await request(app).get("/users");
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe("NOT_FOUND");
+    expect(response.body.error.hint).toContain("/v1");
   });
 
   it("preserva health 503 e oculta detalhes da indisponibilidade", async () => {
@@ -65,6 +82,8 @@ describe("Infraestrutura e pipeline HTTP", () => {
     const response = await request(app).get("/health");
     expect(response.status).toBe(503);
     expect(response.body.status).toBe("DEGRADED");
+    expect(response.body.version).toBe("1.0.0");
+    expect(response.body.availableVersions).toContain("v1");
     expect(response.body.services.database.status).toBe("ERROR");
     expect(JSON.stringify(response.body)).not.toContain("senha-interna");
   });
@@ -86,19 +105,4 @@ describe("Infraestrutura e pipeline HTTP", () => {
     expect(response.body.error.code).toBe("CONFLICT");
     expect(JSON.stringify(response.body)).not.toContain("secret");
   });
-});
-// add atvd7
-it("expõe o health da V1", async () => {
-  const response = await request(app).get("/v1/health");
-
-  expect(response.status).toBe(200);
-  expect(response.body).toMatchObject({ version: "v1", status: "OK" });
-});
-
-it("rejeita a rota de usuário sem versão", async () => {
-  const response = await request(app).get("/users");
-
-  expect(response.status).toBe(404);
-  expect(response.body.error.code).toBe("NOT_FOUND");
-  expect(response.body.error.hint).toContain("/v1");
 });

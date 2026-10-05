@@ -1,7 +1,7 @@
 //src/app.js
 import express from "express";
-import v1Routes from "./api/v1/routes/index.js";
 import prisma from "./config/database.js";
+import v1Routes from "./api/v1/routes/index.js";
 import subjectRoutes from "./routes/subjectRoutes.js";
 import questionRoutes from "./routes/questionRoutes.js";
 import errorHandler, { notFoundHandler } from "./middlewares/errorHandler.js";
@@ -32,6 +32,8 @@ app.get("/health", async (_req, res) => {
     return res.status(503).json({
       status: "DEGRADED",
       message: "API do Gerador de Provas",
+      version: "1.0.0",
+      availableVersions: ["v1"],
       services: {
         api: "OK",
         database: { status: "ERROR" },

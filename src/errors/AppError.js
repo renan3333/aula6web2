@@ -1,7 +1,6 @@
 /**
  * Representa um erro operacional que pode ser comunicado com segurança pela API.
  */
-
 export class AppError extends Error {
   /**
    * @param {string} message - Mensagem segura para quem consome a API.

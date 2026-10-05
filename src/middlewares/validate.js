@@ -1,4 +1,3 @@
-//middlewares/validade.js
 import { ValidationError } from "../errors/AppError.js";
 
 /**

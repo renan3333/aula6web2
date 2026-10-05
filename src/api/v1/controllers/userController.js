@@ -1,5 +1,5 @@
-//userController.js
 import * as userService from "../services/userService.js";
+
 /**
  * Cria um usuário a partir de dados já validados pelo middleware.
  * @param {import("express").Request} req - Requisição HTTP.
