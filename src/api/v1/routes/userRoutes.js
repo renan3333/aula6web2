@@ -1,12 +1,8 @@
 import express from "express";
 import * as userController from "../controllers/userController.js";
 import validate from "../../../middlewares/validate.js";
-import {
-  createUserSchema,
-  idParamSchema,
-  updateUserSchema,
-} from "../schemas/userSchema.js";
-
+import { idParamSchema } from "../../../schemas/idSchema.js";
+import { createUserSchema, updateUserSchema } from "../schemas/userSchema.js";
 const router = express.Router();
 
 router.post("/", validate(createUserSchema), userController.create);

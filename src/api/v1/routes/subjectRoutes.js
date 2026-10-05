@@ -1,9 +1,9 @@
 import express from "express";
 import * as subjectController from "../controllers/subjectController.js";
-import validate from "../middlewares/validate.js";
+import validate from "../../../middlewares/validate.js";
+import { idParamSchema } from "../../../schemas/idSchema.js";
 import {
   createSubjectSchema,
-  idParamSchema,
   updateSubjectSchema,
 } from "../schemas/subjectSchema.js";
 
