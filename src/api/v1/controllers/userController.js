@@ -1,10 +1,6 @@
-// ✅ Um nível para acessar os serviços dentro da V1
 import * as userService from "../services/userService.js";
-import * as subjectService from "../services/subjectService.js";
-import * as questionService from "../services/questionService.js";
 
-// ✅ Três níveis para arquivos compartilhados fora da api
-import { NotFoundError } from "../../../errors/AppError.js";/**
+/**
  * Cria um usuário a partir de dados já validados pelo middleware.
  * @param {import("express").Request} req - Requisição HTTP.
  * @param {import("express").Response} res - Resposta HTTP.

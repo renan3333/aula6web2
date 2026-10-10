@@ -14,11 +14,3 @@ export const positiveIdSchema = numericInputSchema.pipe(
     .positive("ID deve ser positivo")
     .max(2147483647, "ID excede o limite do banco"),
 );
-
-/** Valida o objeto de parâmetros da requisição (req.params = { id }) */
-export const idParamSchema = z.object({
-  id: positiveIdSchema,
-});
-
-/** Alias para compatibilidade caso alguma rota busque por idSchema */
-export const idSchema = idParamSchema;

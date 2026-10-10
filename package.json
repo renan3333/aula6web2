@@ -11,8 +11,8 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:pratica": "vitest run tests/users.test.js tests/middlewares.test.js",
-    "test:atividade": "vitest run tests/subjects-and-questions.test.js",
+    "test:pratica": "vitest run tests/users.test.js tests/subjects-and-questions.test.js tests/middlewares.test.js tests/users-v2.test.js tests/deprecation.test.js tests/migration-v2.test.js",
+    "test:atividade": "vitest run tests/resources-v2.test.js",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
@@ -33,7 +33,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "pg": "^8.23.0",
-    "zod": "^4.6.5"
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -46,10 +46,10 @@
     "globals": "^17.10.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.9.6",
-    "prisma": "^7.9.1",
+    "prisma": "^7.10.0",
     "supertest": "^7.2.2",
     "tsx": "^4.23.12",
-    "vitest": "^5.0.1"
+    "vitest": "^5.0.0"
   },
   "allowScripts": {
     "@prisma/engines@7.9.1": true,
