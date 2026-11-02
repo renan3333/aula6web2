@@ -10,6 +10,7 @@ export default defineConfig([
       "aulas/**",
       ".agents/**",
       ".codex/**",
+      ".vscode/**",
       "generated/**",
       "coverage/**",
       "package-lock.json",

@@ -11,10 +11,12 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:pratica": "vitest run tests/users.test.js tests/subjects-and-questions.test.js tests/middlewares.test.js tests/users-v2.test.js tests/deprecation.test.js tests/migration-v2.test.js",
-    "test:atividade": "vitest run tests/resources-v2.test.js",
+    "test:pratica": "vitest run --exclude tests/upload-v2.test.js && vitest run tests/upload-v2.test.js -t Prática",
+    "test:atividade": "vitest run tests/upload-v2.test.js -t Atividade",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "fixtures:upload": "node tests/fixtures/createUploadFixtures.js",
+    "serve:avaliacao": "tsx tests/serve-evaluation.js"
   },
   "repository": {
     "type": "git",
@@ -29,9 +31,11 @@
   "homepage": "https://github.com/arthurfporto/26-webii-api#readme",
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
-    "@prisma/client": "^7.10.0",
+    "@prisma/client": "^7.9.1",
+    "@uploadcare/upload-client": "6.23.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "multer": "2.4.0",
     "pg": "^8.23.0",
     "zod": "^4.5.4"
   },
@@ -46,7 +50,7 @@
     "globals": "^17.10.0",
     "nodemon": "^3.1.14",
     "prettier": "^3.9.6",
-    "prisma": "^7.10.0",
+    "prisma": "^7.9.1",
     "supertest": "^7.2.2",
     "tsx": "^4.23.12",
     "vitest": "^5.0.0"

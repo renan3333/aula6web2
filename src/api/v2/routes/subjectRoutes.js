@@ -1,31 +1,10 @@
+// ADICIONADO: módulo V2 de matérias; reutiliza contrato estável sem editar a V1.
 import express from "express";
-import * as subjectController from "../controllers/subjectController.js";
-import validate from "../../../middlewares/validate.js";
-import {
-  createSubjectSchema,
-  idParamSchema,
-  updateSubjectSchema,
-} from "../schemas/subjectSchema.js";
+import stableSubjectRoutes from "../../v1/routes/subjectRoutes.js";
 
 const router = express.Router();
 
-router.post("/", validate(createSubjectSchema), subjectController.create);
-router.get("/", subjectController.getAll);
-router.get(
-  "/:id",
-  validate(idParamSchema, "params"),
-  subjectController.getById,
-);
-router.patch(
-  "/:id",
-  validate(idParamSchema, "params"),
-  validate(updateSubjectSchema),
-  subjectController.update,
-);
-router.delete(
-  "/:id",
-  validate(idParamSchema, "params"),
-  subjectController.remove,
-);
+// ADICIONADO: compõe validação, controller e service existentes de Subject.
+router.use("/", stableSubjectRoutes);
 
 export default router;

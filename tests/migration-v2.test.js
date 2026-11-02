@@ -1,4 +1,4 @@
-// tests/migration-v2.test.js
+// MODIFICADO: verifica expansão gerada pelo Prisma, sem preenchimento de legado.
 import { readFile, readdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
@@ -6,13 +6,8 @@ import pg from "pg";
 
 describe("Prática — migration aditiva V2", () => {
   it("preserva dados V1 e deixa as colunas novas nulas no legado", async () => {
-    const connectionString =
-      process.env.TEST_DATABASE_URL ||
-      process.env.DATABASE_URL ||
-      "postgresql://postgres:postgres@localhost:5432/postgres?schema=public";
-
     const client = new pg.Client({
-      connectionString,
+      connectionString: process.env.TEST_DATABASE_URL,
     });
     await client.connect();
     const schema = `aula08_${randomUUID().replaceAll("-", "")}`;
@@ -76,7 +71,7 @@ describe("Prática — migration aditiva V2", () => {
           'SELECT primeiro_nome, sobrenome, tipo_usuario, telefone FROM "users" ORDER BY id',
         )
       ).rows;
-      // SOMENTE a estrutura é migrada; a representação cabe ao service.
+      // MODIFICADO: somente a estrutura é migrada; a representação cabe ao service.
       expect(after).toEqual([
         {
           primeiro_nome: null,
