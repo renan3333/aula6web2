@@ -36,11 +36,7 @@ export async function getById(req, res, next) {
 /** Atualiza parcialmente um usuário no contrato V2. */
 export async function update(req, res, next) {
   try {
-    const data = await userService.updateUser(
-      req.params.id,
-      req.body,
-      req.file,
-    );
+    const data = await userService.updateUser(req.params.id, req.body, req.file);
     res
       .status(200)
       .json({ success: true, message: "Usuário atualizado com sucesso", data });

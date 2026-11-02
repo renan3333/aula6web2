@@ -47,7 +47,10 @@ export const createUserV2Schema = z
 /** Schema para PATCH /v2/users/:id. */
 export const updateUserV2Schema = z
   .object(optionalV2Fields)
-  .strict();
+  .strict()
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Envie pelo menos um campo para atualização",
+  });
 
 /** Schema para parâmetros :id positivos. */
 export const idParamSchema = z.object({ id: positiveIdSchema });
