@@ -1,6 +1,8 @@
 //src/app.js
 import express from "express";
+import swaggerUi from "swagger-ui-express";
 import prisma from "./config/database.js";
+import swaggerSpec from "./config/swagger.js";
 import v1Routes from "./api/v1/routes/index.js";
 // ADICIONADO: importa V2; os arquivos e o roteador da V1 permanecem intactos.
 import v2Routes from "./api/v2/routes/index.js";
@@ -10,7 +12,90 @@ const app = express();
 
 app.use(express.json({ limit: "100kb" }));
 
-/** Health check: preserva o contrato de monitoramento 200/503 da Aula 05. */
+// Documentação OpenAPI: publicada antes das rotas e dos middlewares de erro.
+app.get("/api-docs.json", (_req, res) => {
+  res.json(swaggerSpec);
+});
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "API Gerador de Provas - Documentação",
+  }),
+);
+
+// Health check: preserva o contrato de monitoramento 200/503 da Aula 05.
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     HealthResponse:
+ *       type: object
+ *       required: [status, message, version, availableVersions, services]
+ *       properties:
+ *         status:
+ *           type: string
+ *           enum: [OK, DEGRADED]
+ *           example: OK
+ *         message:
+ *           type: string
+ *           example: API do Gerador de Provas
+ *         timestamp:
+ *           type: string
+ *           format: date-time
+ *           description: Presente somente quando a API e o banco respondem (200).
+ *           example: "2026-11-03T12:00:00.000Z"
+ *         version:
+ *           type: string
+ *           example: 1.0.0
+ *         availableVersions:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: [v1, v2]
+ *         services:
+ *           type: object
+ *           required: [api, database]
+ *           properties:
+ *             api:
+ *               type: string
+ *               example: OK
+ *             database:
+ *               type: object
+ *               required: [status]
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   enum: [OK, ERROR]
+ *                   example: OK
+ * /health:
+ *   get:
+ *     tags: [Health]
+ *     summary: Verifica a disponibilidade da API e do banco de dados
+ *     responses:
+ *       200:
+ *         description: API e banco de dados disponíveis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthResponse'
+ *       503:
+ *         description: Banco de dados indisponível (status DEGRADED)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthResponse'
+ *             example:
+ *               status: DEGRADED
+ *               message: API do Gerador de Provas
+ *               version: 1.0.0
+ *               availableVersions: [v1, v2]
+ *               services:
+ *                 api: OK
+ *                 database:
+ *                   status: ERROR
+ */
 app.get("/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
